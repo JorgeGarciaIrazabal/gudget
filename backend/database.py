@@ -14,6 +14,7 @@ load_dotenv()
 #SQLALCHEMY_DATABASE_URL = os.getenv("DB_STRING")
 # Example: "postgresql://user:password@host:port/database"
 # For Supabase, find this in your Supabase project settings under Database -> Connection string -> URI
+
 SQLALCHEMY_DATABASE_URL = os.getenv("DB_STRING", "postgresql://postgres:your_password@db.your_supabase_co.supabase.co:5432/postgres")
 
 
