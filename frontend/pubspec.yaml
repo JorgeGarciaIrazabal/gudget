@@ -2,7 +2,9 @@ name: frontend
 description: "A budget app for the garbanzo family"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
-uses-material-design: true
+
+flutter:
+  uses-material-design: true
 
 environment:
   sdk: ^3.8.0

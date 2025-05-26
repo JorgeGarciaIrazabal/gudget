@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../models/transaction_model.dart';
 import '../screens/add_transaction_dialog.dart';
 import '../screens/evolution_screen.dart';
 import '../screens/monthly_records_screen.dart';
@@ -50,6 +51,54 @@ class _HomeScreenState extends State<HomeScreen> {
         _selectedMonth.day,
       );
     });
+  }
+
+  Row buildTransactionButtons(BudgetService budgetService) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center, // Changed from MainAxisAlignment.end
+      children: [
+        FloatingActionButton.extended(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AddTransactionDialog(
+                  transactionType: TransactionType.income, // For Income
+                  onSave: (transaction) {
+                    budgetService.addTransaction(transaction);
+                  },
+                );
+              },
+            );
+          },
+          tooltip: 'Income',
+          icon: const Icon(Icons.add),
+          label: const Text('Add Income'),
+          heroTag: 'addIncome', // Ensure unique heroTag
+        ),
+        const SizedBox(width: 16), // Spacing between buttons, changed from height to width for horizontal spacing
+        FloatingActionButton.extended(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AddTransactionDialog(
+                  transactionType: TransactionType.expense,
+                  onSave: (transaction) {
+                    budgetService.addTransaction(transaction);
+                  },
+                );
+              },
+            );
+          },
+          tooltip: 'Expense',
+          icon: const Icon(Icons.remove),
+          label: const Text('Add Expense'),
+          backgroundColor: Colors.red, // Optional: Differentiate color
+          heroTag: 'addExpense', // Ensure unique heroTag
+        ),
+      ],
+    );
   }
 
   @override
@@ -114,22 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const EvolutionScreen(),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AddTransactionDialog(
-                onSave: (transaction) {
-                  budgetService.addTransaction(transaction);
-                },
-              );
-            },
-          );
-        },
-        tooltip: 'Add Transaction',
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: buildTransactionButtons(budgetService),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),

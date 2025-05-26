@@ -5,8 +5,9 @@ import '../services/hive_service.dart'; // For uuid
 
 class AddTransactionDialog extends StatefulWidget {
   final Function(TransactionModel) onSave;
+  final TransactionType transactionType;
 
-  const AddTransactionDialog({super.key, required this.onSave});
+  const AddTransactionDialog({super.key, required this.transactionType, required this.onSave});
 
   @override
   State<AddTransactionDialog> createState() => _AddTransactionDialogState();
@@ -50,6 +51,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    _selectedType = widget.transactionType;
     return AlertDialog(
       title: const Text('Add Transaction'),
       content: SingleChildScrollView(
@@ -60,13 +62,13 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
             children: <Widget>[
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Description'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a description';
+                  onSaved: (value) {
+                    if (value == null || value.isEmpty) {
+                      _description = _selectedType == TransactionType.income ? 'Income' : 'Expense';
+                    } else {
+                      _description = value;
+                    }
                   }
-                  return null;
-                },
-                onSaved: (value) => _description = value!,
               ),
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Amount'),
