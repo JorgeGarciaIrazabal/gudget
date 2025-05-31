@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../models/transaction_model.dart';
-import '../screens/add_transaction_dialog.dart';
 import '../screens/evolution_screen.dart';
 import '../screens/monthly_records_screen.dart';
 import '../services/hive_service.dart';
@@ -53,54 +51,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Row buildTransactionButtons(BudgetService budgetService) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center, // Changed from MainAxisAlignment.end
-      children: [
-        FloatingActionButton.extended(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AddTransactionDialog(
-                  transactionType: TransactionType.income, // For Income
-                  onSave: (transaction) {
-                    budgetService.addTransaction(transaction);
-                  },
-                );
-              },
-            );
-          },
-          tooltip: 'Income',
-          icon: const Icon(Icons.add),
-          label: const Text('Add Income'),
-          heroTag: 'addIncome', // Ensure unique heroTag
-        ),
-        const SizedBox(width: 16), // Spacing between buttons, changed from height to width for horizontal spacing
-        FloatingActionButton.extended(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AddTransactionDialog(
-                  transactionType: TransactionType.expense,
-                  onSave: (transaction) {
-                    budgetService.addTransaction(transaction);
-                  },
-                );
-              },
-            );
-          },
-          tooltip: 'Expense',
-          icon: const Icon(Icons.remove),
-          label: const Text('Add Expense'),
-          backgroundColor: Colors.red, // Optional: Differentiate color
-          heroTag: 'addExpense', // Ensure unique heroTag
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final budgetService = Provider.of<BudgetService>(context);
@@ -111,11 +61,18 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Simple Budget'),
-            Text(
-              'Balance: ${currencyFormatter.format(budgetService.totalBalance)}',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
-            ),
+            // const Text('Simple Budget'),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0), // Add padding to the top
+              child: Text(
+                'Balance: \n${currencyFormatter.format(budgetService.totalBalance)}',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: budgetService.totalBalance >= 0 ? Colors.green : Colors.red,
+                ),
+              ),
+            )
           ],
         ),
         actions: _currentIndex == 0 // Show month navigation only on the first tab
@@ -141,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: Text(
                     DateFormat('MMM yyyy').format(_selectedMonth),
-                    style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                    style: const TextStyle(color: Colors.black),
                   ),
                 ),
                 IconButton(
@@ -163,11 +120,9 @@ class _HomeScreenState extends State<HomeScreen> {
           const EvolutionScreen(),
         ],
       ),
-      floatingActionButton: buildTransactionButtons(budgetService),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
-        notchMargin: 6.0,
+        notchMargin: 1.0,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[

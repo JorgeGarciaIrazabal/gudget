@@ -17,6 +17,7 @@ dependencies:
   intl: ^0.18.1 # For date formatting
   fl_chart: ^0.63.0 # For charts
   uuid: ^4.1.0 # For unique IDs
+  flutter_slidable: ^4.0.0
 
 dev_dependencies:
   flutter_test:

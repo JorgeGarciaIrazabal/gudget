@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart'; // Ensure this is imported
 import '../models/transaction_model.dart';
 import '../services/hive_service.dart'; // For uuid
 
@@ -19,6 +20,27 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
   double _amount = 0.0;
   DateTime _selectedDate = DateTime.now();
   TransactionType _selectedType = TransactionType.expense;
+
+  // 1. Declare a FocusNode
+  late FocusNode _amountFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    // 2. Initialize the FocusNode
+    _amountFocusNode = FocusNode();
+    // 3. Request focus after the first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      FocusScope.of(context).requestFocus(_amountFocusNode);
+    });
+  }
+
+  @override
+  void dispose() {
+    // 4. Dispose the FocusNode when the widget is disposed
+    _amountFocusNode.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -61,7 +83,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Description'),
+                  decoration: const InputDecoration(labelText: 'Description'),
                   onSaved: (value) {
                     if (value == null || value.isEmpty) {
                       _description = _selectedType == TransactionType.income ? 'Income' : 'Expense';
@@ -71,8 +93,13 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                   }
               ),
               TextFormField(
-                decoration: const InputDecoration(labelText: 'Amount'),
+                // 5. Assign the FocusNode to the TextFormField
+                focusNode: _amountFocusNode,
+                decoration: const InputDecoration(labelText: 'Amount in \$'),
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                ],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter an amount';
@@ -136,8 +163,8 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
 
 // Helper extension for capitalizing strings
 extension StringExtension on String {
-    String capitalize() {
-      if (isEmpty) return this;
-      return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
-    }
+  String capitalize() {
+    if (isEmpty) return this;
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
+  }
 }
