@@ -108,39 +108,43 @@ class _HomeScreenState extends State<HomeScreen> {
               ]
             : null,
       ),
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+      body: Column(
         children: [
-          MonthlyRecordsScreen(selectedMonth: _selectedMonth),
-          const EvolutionScreen(),
+          BottomAppBar(
+            height: 56,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                IconButton(
+                  icon: const Icon(Icons.list_alt),
+                  tooltip: "Monthly Records",
+                  color: _currentIndex == 0 ? Theme.of(context).colorScheme.secondary : Theme.of(context).unselectedWidgetColor,
+                  onPressed: () => _onTabTapped(0),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.show_chart),
+                  tooltip: "Evolution",
+                  color: _currentIndex == 1 ? Theme.of(context).colorScheme.secondary : Theme.of(context).unselectedWidgetColor,
+                  onPressed: () => _onTabTapped(1),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              children: [
+                MonthlyRecordsScreen(selectedMonth: _selectedMonth),
+                const EvolutionScreen(),
+              ],
+            ),
+          ),
         ],
-      ),
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 1.0,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.list_alt),
-              tooltip: "Monthly Records",
-              color: _currentIndex == 0 ? Theme.of(context).colorScheme.secondary : Theme.of(context).unselectedWidgetColor,
-              onPressed: () => _onTabTapped(0),
-            ),
-            const SizedBox(width: 40), // The dummy child for the notch
-            IconButton(
-              icon: const Icon(Icons.show_chart),
-              tooltip: "Evolution",
-              color: _currentIndex == 1 ? Theme.of(context).colorScheme.secondary : Theme.of(context).unselectedWidgetColor,
-              onPressed: () => _onTabTapped(1),
-            ),
-          ],
-        ),
       ),
     );
   }

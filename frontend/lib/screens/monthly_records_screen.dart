@@ -50,7 +50,7 @@ class _MonthlyRecordsScreenState extends State<MonthlyRecordsScreen> {
       body: Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(3.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -155,7 +155,7 @@ class _MonthlyRecordsScreenState extends State<MonthlyRecordsScreen> {
       ],
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(1.0),
+        padding: const EdgeInsets.all(15.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
