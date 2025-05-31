@@ -27,15 +27,6 @@ class _MonthlyRecordsScreenState extends State<MonthlyRecordsScreen> {
       widget.selectedMonth.month,
     );
 
-    if (monthlyTransactions.isEmpty) {
-      return Center(
-        child: Text(
-          'No transactions for ${DateFormat.yMMMM().format(widget.selectedMonth)}.',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-      );
-    }
-
     double monthlyIncome = 0;
     double monthlyExpense = 0;
     for (var t in monthlyTransactions) {
@@ -49,6 +40,14 @@ class _MonthlyRecordsScreenState extends State<MonthlyRecordsScreen> {
     return Scaffold(
       body: Column(
       children: [
+        if (monthlyTransactions.isEmpty)
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              'No transactions for ${DateFormat.yMMMM().format(widget.selectedMonth)}.',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
         Padding(
           padding: const EdgeInsets.all(3.0),
           child: Row(
@@ -83,10 +82,24 @@ class _MonthlyRecordsScreenState extends State<MonthlyRecordsScreen> {
                   children: [
                     SlidableAction(
                       onPressed: (context) {
-                        // TODO: Implement Edit Action
-                        print('Not Implemented yet: ${transaction.description}');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('(Not implemented) Edit: ${transaction.description}')),
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AddTransactionDialog(
+                              transactionType: transaction.type,
+                              transactionToEdit: transaction,
+                              onSave: (updatedTransaction) {
+                                budgetService.deleteTransaction(transaction.id);
+                                budgetService.addTransaction(updatedTransaction);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text('${updatedTransaction.description} updated'),
+                                      duration: const Duration(milliseconds: 500),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                         );
                       },
                       backgroundColor: Colors.blue,
@@ -155,7 +168,7 @@ class _MonthlyRecordsScreenState extends State<MonthlyRecordsScreen> {
       ],
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.symmetric(vertical: 50),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

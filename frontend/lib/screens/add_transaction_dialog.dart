@@ -7,8 +7,14 @@ import '../services/hive_service.dart'; // For uuid
 class AddTransactionDialog extends StatefulWidget {
   final Function(TransactionModel) onSave;
   final TransactionType transactionType;
+  final TransactionModel? transactionToEdit;
 
-  const AddTransactionDialog({super.key, required this.transactionType, required this.onSave});
+  const AddTransactionDialog({
+    super.key, 
+    required this.transactionType, 
+    required this.onSave,
+    this.transactionToEdit,
+  });
 
   @override
   State<AddTransactionDialog> createState() => _AddTransactionDialogState();
@@ -16,10 +22,10 @@ class AddTransactionDialog extends StatefulWidget {
 
 class _AddTransactionDialogState extends State<AddTransactionDialog> {
   final _formKey = GlobalKey<FormState>();
-  String _description = '';
-  double _amount = 0.0;
-  DateTime _selectedDate = DateTime.now();
-  TransactionType _selectedType = TransactionType.expense;
+  late String _description;
+  late double _amount;
+  late DateTime _selectedDate;
+  late TransactionType _selectedType;
 
   // 1. Declare a FocusNode
   late FocusNode _amountFocusNode;
@@ -27,9 +33,21 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
   @override
   void initState() {
     super.initState();
-    // 2. Initialize the FocusNode
     _amountFocusNode = FocusNode();
-    // 3. Request focus after the first frame is rendered
+    
+    // Initialize form fields based on whether we're editing or creating
+    if (widget.transactionToEdit != null) {
+      _description = widget.transactionToEdit!.description;
+      _amount = widget.transactionToEdit!.amount;
+      _selectedDate = widget.transactionToEdit!.date;
+      _selectedType = widget.transactionToEdit!.type;
+    } else {
+      _description = '';
+      _amount = 0.0;
+      _selectedDate = DateTime.now();
+      _selectedType = widget.transactionType;
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FocusScope.of(context).requestFocus(_amountFocusNode);
     });
@@ -59,23 +77,30 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      final newTransaction = TransactionModel(
-        id: uuid.v4(), // Generate unique ID
-        description: _description,
-        amount: _amount,
-        date: _selectedDate,
-        type: _selectedType,
-      );
-      widget.onSave(newTransaction);
+      final transaction = widget.transactionToEdit != null
+          ? TransactionModel(
+              id: widget.transactionToEdit!.id, // Keep same ID when editing
+              description: _description,
+              amount: _amount,
+              date: _selectedDate,
+              type: _selectedType,
+            )
+          : TransactionModel(
+              id: uuid.v4(), // Generate new ID when creating
+              description: _description,
+              amount: _amount,
+              date: _selectedDate,
+              type: _selectedType,
+            );
+      widget.onSave(transaction);
       Navigator.of(context).pop();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    _selectedType = widget.transactionType;
     return AlertDialog(
-      title: const Text('Add Transaction'),
+      title: Text(widget.transactionToEdit != null ? 'Edit Transaction' : 'Add Transaction'),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -112,6 +137,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                   }
                   return null;
                 },
+                initialValue: _amount.toString(),
                 onSaved: (value) => _amount = double.parse(value!),
               ),
               const SizedBox(height: 20),

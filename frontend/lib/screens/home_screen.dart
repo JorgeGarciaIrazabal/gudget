@@ -111,20 +111,20 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           BottomAppBar(
-            height: 56,
+            height: 30,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 IconButton(
                   icon: const Icon(Icons.list_alt),
                   tooltip: "Monthly Records",
-                  color: _currentIndex == 0 ? Theme.of(context).colorScheme.secondary : Theme.of(context).unselectedWidgetColor,
+                  color: _currentIndex == 0 ? Theme.of(context).colorScheme.secondary : Colors.grey,
                   onPressed: () => _onTabTapped(0),
                 ),
                 IconButton(
                   icon: const Icon(Icons.show_chart),
                   tooltip: "Evolution",
-                  color: _currentIndex == 1 ? Theme.of(context).colorScheme.secondary : Theme.of(context).unselectedWidgetColor,
+                  color: _currentIndex == 1 ? Theme.of(context).colorScheme.secondary : Colors.grey,
                   onPressed: () => _onTabTapped(1),
                 ),
               ],
