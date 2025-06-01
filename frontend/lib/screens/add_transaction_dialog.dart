@@ -29,11 +29,13 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
 
   // 1. Declare a FocusNode
   late FocusNode _amountFocusNode;
+  late TextEditingController _amountController;
 
   @override
   void initState() {
     super.initState();
     _amountFocusNode = FocusNode();
+    _amountController = TextEditingController();
     
     // Initialize form fields based on whether we're editing or creating
     if (widget.transactionToEdit != null) {
@@ -50,6 +52,11 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FocusScope.of(context).requestFocus(_amountFocusNode);
+      _amountController.text = _amount.toString();
+      _amountController.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: _amountController.text.length,
+      );
     });
   }
 
@@ -57,6 +64,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
   void dispose() {
     // 4. Dispose the FocusNode when the widget is disposed
     _amountFocusNode.dispose();
+    _amountController.dispose();
     super.dispose();
   }
 
@@ -137,7 +145,7 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
                   }
                   return null;
                 },
-                initialValue: _amount.toString(),
+                controller: _amountController,
                 onSaved: (value) => _amount = double.parse(value!),
               ),
               const SizedBox(height: 20),
